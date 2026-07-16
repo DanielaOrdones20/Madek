@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Madek - Cuidado de la Piel & Moda Modesta</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Inter para lectura moderna y cómoda en móviles) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome para Iconos táctiles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Configuración personalizada de Colores de Marca Madek -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        madek: {
+                            blue: '#0043A4', // El azul corporativo de la marca
+                            blueDark: '#002E73',
+                            cream: '#FAF8F5',  // El fondo crema de la marca
+                            accent: '#E5EDFA',
+                            text: '#1E293B',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Desvanecimiento y transiciones fluidas de interfaz móvil */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Ocultar barra de scroll en sliders horizontales de celular */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Efecto Blur Premium */
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        /* Animaciones para alertas */
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .slide-up {
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="bg-madek-cream text-madek-text font-sans min-h-screen flex flex-col antialiased pb-24">
+
+    <!-- Header Principal -->
+    <header class="sticky top-0 z-40 glassmorphism border-b border-gray-100 shadow-sm">
+        <div class="max-w-md mx-auto px-4 py-2.5 flex items-center justify-between">
+            <!-- Logo Madek en formato circular usando Imagen1.jpg -->
+            <div class="flex items-center gap-2.5">
+                <img src="Imagen1.jpg" alt="Logo Madek" class="w-12 h-12 rounded-full border border-madek-accent object-cover shadow-sm" onerror="this.src='https://placehold.co/100x100/0043A4/white?text=Madek'">
+                <div>
+                    <h1 class="text-base font-bold text-madek-blue tracking-tight leading-none">Madek.</h1>
+                    <span class="text-[9px] text-gray-500 uppercase tracking-widest block mt-1">Cuidado de la piel • Moda Modesta</span>
+                </div>
+            </div>
+            
+            <!-- Acciones Rápidas -->
+            <div class="flex items-center gap-1">
+                <a href="https://wa.me/573224499253" target="_blank" class="p-2 text-green-600 hover:text-green-700 active:scale-90 transition-transform" aria-label="WhatsApp Directo">
+                    <i class="fa-brands fa-whatsapp text-xl"></i>
+                </a>
+                <button onclick="openCartDrawer()" class="p-2 text-madek-blue hover:text-madek-blueDark relative active:scale-95 transition-transform" aria-label="Bolsa de Compras">
+                    <i class="fa-solid fa-bag-shopping text-xl"></i>
+                    <span id="cartCountBadge" class="hidden absolute top-0.5 right-0.5 bg-red-500 text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-white px-4 py-4 border-b border-gray-100">
+        <div class="max-w-md mx-auto">
+            <div class="bg-madek-accent/40 rounded-2xl p-3 text-center mb-4 border border-madek-accent/75">
+                <p class="text-xs text-madek-blue font-medium">
+                    ✨ ¡Pide directo por WhatsApp! Servicio local rápido y seguro.
+                </p>
+            </div>
+
+            <!-- Buscador optimizado para móviles -->
+            <div class="relative">
+                <input type="text" id="searchInput" placeholder="Buscar tónicos, protectores, bálsamos, splash..." 
+                       class="w-full bg-gray-50 border border-gray-200 text-sm rounded-2xl pl-11 pr-10 py-3 focus:outline-none focus:border-madek-blue focus:bg-white transition-all">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-3 px-4 bg-white sticky top-[69px] z-30 border-b border-gray-100">
+        <div class="max-w-md mx-auto flex gap-2 overflow-x-auto no-scrollbar py-1">
+            <button onclick="filterCategory('all')" id="catBtn-all" class="category-btn px-4 py-2 rounded-xl text-xs font-semibold tracking-wide whitespace-nowrap bg-madek-blue text-white transition-all shadow-sm">
+                Todos <span class="ml-1 text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full" id="allCount">0</span>
+            </button>
+            <button onclick="filterCategory('skincare')" id="catBtn-skincare" class="category-btn px-4 py-2 rounded-xl text-xs font-semibold tracking-wide whitespace-nowrap bg-gray-50 text-gray-600 hover:bg-gray-100 transition-all border border-gray-200">
+                Cuidado Facial <span class="ml-1 text-[10px] bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded-full" id="skincareCount">0</span>
+            </button>
+            <button onclick="filterCategory('labios')" id="catBtn-labios" class="category-btn px-4 py-2 rounded-xl text-xs font-semibold tracking-wide whitespace-nowrap bg-gray-50 text-gray-600 hover:bg-gray-100 transition-all border border-gray-200">
+                Labios <span class="ml-1 text-[10px] bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded-full" id="labiosCount">0</span>
+            </button>
+            <button onclick="filterCategory('corporal')" id="catBtn-corporal" class="category-btn px-4 py-2 rounded-xl text-xs font-semibold tracking-wide whitespace-nowrap bg-gray-50 text-gray-600 hover:bg-gray-100 transition-all border border-gray-200">
+                Splash & Corporal <span class="ml-1 text-[10px] bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded-full" id="corporalCount">0</span>
+            </button>
+            <button onclick="filterCategory('moda')" id="catBtn-moda" class="category-btn px-4 py-2 rounded-xl text-xs font-semibold tracking-wide whitespace-nowrap bg-gray-50 text-gray-600 hover:bg-gray-100 transition-all border border-gray-200">
+                Moda Modesta <span class="ml-1 text-[10px] bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded-full" id="modaCount">0</span>
+            </button>
+        </div>
+    </section>
+
+    <main class="max-w-md mx-auto px-3.5 py-4 flex-1 w-full">
+        <div class="flex items-center justify-between mb-3 px-1">
+            <span id="itemsFoundText" class="text-xs text-gray-500 font-medium">Mostrando productos...</span>
+            <span class="text-xs font-bold text-madek-blue flex items-center gap-1">
+                <i class="fa-solid fa-circle text-[7px] text-green-500 animate-pulse"></i> Online 24/7
+            </span>
+        </div>
+
+        <!-- Grilla de productos (2 columnas para pantallas móviles) -->
+        <div id="productsGrid" class="grid grid-cols-2 gap-3">
+            <!-- Renderizado vía JavaScript -->
+        </div>
+
+        <!-- Estado Vacío -->
+        <div id="emptyState" class="hidden text-center py-16 px-4">
+            <div class="text-gray-300 mb-3 text-4xl">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <h3 class="text-sm font-bold text-gray-700 mb-1">Sin resultados</h3>
+            <p class="text-xs text-gray-500 max-w-xs mx-auto mb-4">Intenta buscar otro producto o cambia la categoría de filtro.</p>
+            <button onclick="resetFilters()" class="bg-madek-blue text-white text-xs px-5 py-2.5 rounded-xl font-semibold active:scale-95 transition-transform">
+                Ver todos los productos
+            </button>
+        </div>
+    </main>
+
+    <div id="detailModal" class="fixed inset-0 z-50 hidden flex items-end justify-center transition-all duration-300">
+        <!-- Fondo Oscuro -->
+        <div onclick="closeProductDetail()" class="absolute inset-0 bg-black/50 backdrop-blur-xs cursor-pointer"></div>
+        <!-- Tarjeta de Contenido deslizable desde abajo -->
+        <div class="relative bg-white rounded-t-3xl w-full max-w-md max-h-[88vh] overflow-y-auto shadow-2xl transition-transform duration-300 translate-y-full flex flex-col p-5" id="detailModalContainer">
+            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4 shrink-0"></div>
+            
+            <!-- Botón Cerrar -->
+            <button onclick="closeProductDetail()" class="absolute right-4 top-4 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 active:scale-90 transition-transform">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Imagen Principal con Switch Foto Real -->
+            <div class="bg-gray-50 rounded-2xl overflow-hidden aspect-square relative mb-4 shrink-0 flex items-center justify-center border border-gray-100 shadow-sm">
+                <img id="detailProductImage" src="" alt="" class="object-cover w-full h-full">
+                
+                <!-- Botón Switch en Detalle -->
+                <button id="detailSwitchBtn" onclick="" class="absolute bottom-3 right-3 bg-white/95 text-madek-blue border border-madek-accent text-[10px] font-bold px-3 py-1.5 rounded-full shadow-md active:scale-95 transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-camera"></i> <span id="detailSwitchText">Ver Foto Real</span>
+                </button>
+            </div>
+
+            <!-- Datos del Producto -->
+            <div class="flex-1">
+                <span id="detailProductCategory" class="text-[10px] uppercase tracking-wider font-bold text-madek-blue">CATEGORÍA</span>
+                <h2 id="detailProductName" class="text-lg font-bold text-gray-800 mt-1 mb-2">Nombre Completo</h2>
+                
+                <!-- Precio Destacado -->
+                <div class="flex items-center gap-3 mb-3">
+                    <span id="detailProductPrice" class="text-xl font-bold text-madek-blue">$0</span>
+                    <span class="text-xs bg-green-50 text-green-700 font-semibold px-2 py-0.5 rounded-md">Disponible</span>
+                </div>
+
+                <!-- Descripción Completa -->
+                <p id="detailProductDesc" class="text-xs text-gray-600 leading-relaxed mb-5">Descripción...</p>
+            </div>
+
+            <!-- Footer del Detalle -->
+            <div class="pt-4 border-t border-gray-100 shrink-0 space-y-3 bg-white sticky bottom-0">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-gray-700">Cantidad a pedir:</span>
+                    <div class="flex items-center border border-gray-200 rounded-xl bg-gray-50 px-3 py-1">
+                        <button onclick="decrementDetailQty()" class="p-1.5 text-gray-400 hover:text-gray-700 active:scale-75 transition-transform"><i class="fa-solid fa-minus text-xs"></i></button>
+                        <span id="detailQty" class="px-4 text-sm font-bold text-gray-800">1</span>
+                        <button onclick="incrementDetailQty()" class="p-1.5 text-gray-400 hover:text-gray-700 active:scale-75 transition-transform"><i class="fa-solid fa-plus text-xs"></i></button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="addDetailToCartBtn" class="bg-gray-100 hover:bg-gray-200 text-madek-blue font-semibold py-3.5 rounded-xl text-xs uppercase tracking-wide active:scale-95 transition-all">
+                        Agregar a Bolsa
+                    </button>
+                    <button id="directWapBtn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3.5 rounded-xl text-xs uppercase tracking-wide active:scale-95 transition-all flex items-center justify-center gap-1.5">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Pedir Ya
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cartDrawer" class="fixed inset-0 z-50 hidden flex items-end justify-center transition-all duration-300">
+        <!-- Fondo Oscuro -->
+        <div onclick="closeCartDrawer()" class="absolute inset-0 bg-black/50 backdrop-blur-xs cursor-pointer"></div>
+        <!-- Contenedor del Carrito -->
+        <div class="absolute bottom-0 w-full max-w-md bg-white rounded-t-3xl flex flex-col shadow-2xl transition-transform duration-300 translate-y-full max-h-[85vh]" id="cartDrawerContainer">
+            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-3 mt-3 shrink-0"></div>
+            
+            <!-- Header Carrito -->
+            <div class="px-5 pb-3 border-b border-gray-100 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping text-madek-blue text-lg"></i>
+                    <h2 class="text-base font-bold text-gray-800">Bolsa de Compras</h2>
+                </div>
+                <button onclick="closeCartDrawer()" class="text-gray-400 hover:text-gray-600 p-1.5 active:scale-90 transition-transform">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Listado de productos -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar" id="cartItemsList">
+                <!-- Poblar dinámicamente -->
+            </div>
+
+            <!-- Formulario e Integración de WhatsApp -->
+            <div class="border-t border-gray-100 p-5 bg-gray-50 shrink-0 space-y-4">
+                <div class="flex justify-between items-center text-sm font-bold text-gray-800">
+                    <span>Total estimado:</span>
+                    <span id="cartTotal" class="text-lg text-madek-blue">$0</span>
+                </div>
+
+                <div class="space-y-2">
+                    <input type="text" id="cust_name" placeholder="Tu Nombre y Apellido" required
+                           class="w-full bg-white border border-gray-200 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-madek-blue">
+                    <input type="text" id="cust_city" placeholder="Barrio o sector de entrega local" required
+                           class="w-full bg-white border border-gray-200 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-madek-blue">
+                </div>
+
+                <div class="pt-1">
+                    <button onclick="sendOrderViaWhatsApp()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md active:scale-[0.98]">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Enviar Pedido a WhatsApp
+                    </button>
+                    <p class="text-[10px] text-center text-gray-400 mt-2">
+                        Se abrirá WhatsApp para enviar tu pedido detallado a Madek.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Microinteracción de tostada (Al agregar a la bolsa) -->
+    <div id="toastNotification" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-madek-blue text-white text-xs px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 pointer-events-none opacity-0 transition-opacity duration-300">
+        <i class="fa-solid fa-circle-check text-green-400"></i>
+        <span id="toastText">¡Añadido! 🛍️</span>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 shadow-[0_-2px_10px_rgba(0,0,0,0.04)] px-4 py-2.5 flex justify-around items-center max-w-md mx-auto">
+        <button onclick="scrollToTopAndReset()" class="flex flex-col items-center gap-1 p-1 text-madek-blue">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Inicio</span>
+        </button>
+        <button onclick="filterCategory('skincare'); document.getElementById('searchInput').focus();" class="flex flex-col items-center gap-1 p-1 text-gray-400 focus:text-madek-blue active:text-madek-blue">
+            <i class="fa-solid fa-hand-holding-droplet text-lg"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Skincare</span>
+        </button>
+        <button onclick="filterCategory('labios')" class="flex flex-col items-center gap-1 p-1 text-gray-400 focus:text-madek-blue active:text-madek-blue">
+            <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Labios</span>
+        </button>
+        <button onclick="openCartDrawer()" class="flex flex-col items-center gap-1 p-1 text-gray-400 focus:text-madek-blue active:text-madek-blue relative">
+            <i class="fa-solid fa-bag-shopping text-lg"></i>
+            <span id="mobileCartCount" class="hidden absolute top-0 right-1 bg-red-500 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold">0</span>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Bolsa</span>
+        </button>
+    </nav>
+
+    <script>
+        const products = [
+            { 
+                id: 1, 
+                name: "Mascarilla 3 Pasos Bioaqua", 
+                price: 5000, 
+                category: "skincare", 
+                imgPromo: "1784230092393.jpg", 
+                imgReal: "1784230092403.jpg",  
+                description: "Elimina los puntos negros de tu nariz de manera efectiva y sencilla. Incluye tres tiras nasales que ayudan a suavizar, remover profundamente las espinillas y limpiar impurezas. Fórmula balanceada para el cuidado de tu piel.",
+                stock: 15
+            },
+            { 
+                id: 2, 
+                name: "Parches Círculos Bye Granos Bloomshell", 
+                price: 12000, 
+                category: "skincare", 
+                imgPromo: "1784230092414.jpg", 
+                imgReal: "1784230092425.jpg",  
+                description: "Ideales para tratar barritos y espinillas. Estas pegatinas adhesivas se colocan sobre el granito absorbiendo el exceso de grasa y calmando la inflamación gracias a su contenido de ácido salicílico y extracto de árbol de té.",
+                stock: 12
+            },
+            { 
+                id: 3, 
+                name: "Kit Facial Antiacné x3 Bioaqua", 
+                price: 45000, 
+                category: "skincare", 
+                imgPromo: "1784230092436.jpg", 
+                imgReal: "1784230092447.jpg",  
+                description: "Tratamiento completo de tres pasos que controla la grasa, ayuda a desvanecer y cicatrizar marcas de acné previniendo nuevos brotes. Hidrata profundamente sin tapar los poros de tu rostro.",
+                stock: 8
+            },
+            { 
+                id: 4, 
+                name: "Tratamiento Fortalecedor y de Crecimiento para Pestañas Bioaqua", 
+                price: 12000, 
+                category: "skincare", 
+                imgPromo: "image_014c4a.jpg", 
+                imgReal: "image_014c83.jpg",  
+                description: "Nutre las pestañas desde la raíz hasta las puntas, añade grosor, resuelve el problema de escasez o falta de largo en las pestañas para lucir una mirada impactante y natural.",
+                stock: 14
+            },
+            { 
+                id: 5, 
+                name: "Protector Solar Textura Fluida 60 SPF Aloe Vera Bioaqua", 
+                price: 15000, 
+                category: "skincare", 
+                imgPromo: "image_014cc0.jpg", 
+                imgReal: "image_014ca0.jpg",  
+                description: "El Protector solar con extracto de aloe vera 60 SPF de Bioaqua, no solo te brinda una potente protección contra los daños del sol, sino que también nutre tu piel con las propiedades calmantes e hidratantes del aloe vera.",
+                stock: 18
+            },
+            { 
+                id: 6, 
+                name: "Protector Solar Retinol Bioaqua", 
+                price: 13000, 
+                category: "skincare", 
+                imgPromo: "image_014d00.jpg", 
+                imgReal: "image_014ce2.jpg",  
+                description: "Protege tu piel mientras combates los signos del envejecimiento con el innovador Bloqueador Solar Bioaqua con Retinol. Esta fórmula avanzada ofrece una alta protección SPF 50+ contra los rayos UVB y PA+++ contra los UVA, renovando tu cutis durante el día.",
+                stock: 11
+            },
+            { 
+                id: 7, 
+                name: "Protector Solar Niacinamida Bioaqua", 
+                price: 13000, 
+                category: "skincare", 
+                imgPromo: "image_014d3c.jpg", 
+                imgReal: "image_014d1e.jpg",  
+                description: "Protector solar facial con niacinamida y textura ligera, ideal para mantener la piel hidratada, fresca y con una apariencia más luminosa. Su fórmula de rápida absorción deja un acabado suave y cómodo para el uso diario, sin sensación grasosa.",
+                stock: 16
+            },
+            { 
+                id: 15, 
+                name: "Tónico Facial Rosas + Colágeno Purpure", 
+                price: 20000, 
+                category: "skincare", 
+                imgPromo: "1784230092545.jpg", 
+                imgReal: "1784230092550.jpg",  
+                description: "Refresca y equilibra tu piel con el Tónico Facial Agua de Rosas Purpure. Su fórmula delicada calma y revitaliza. Enriquecido con colágeno, elastina, ácido hialurónico, vitamina C y E, libre de parabenos.",
+                stock: 14
+            },
+            { 
+                id: 16, 
+                name: "Limpiador Facial Bifásico con Extracto de Centella Lula", 
+                price: 35000, 
+                category: "skincare", 
+                imgPromo: "1784230092555.jpg", 
+                imgReal: "1784230092555.jpg", 
+                description: "Este limpiador combina lo mejor del agua y el aceite para eliminar fácilmente el maquillaje (incluso el resistente al agua) sin dejar sensación grasosa ni resecar. Ideal para todo tipo de piel, incluso las más sensibles.",
+                stock: 10
+            },
+            { 
+                id: 17, 
+                name: "Caja Parches de Ojos Retinol Bioaqua", 
+                price: 15000, 
+                category: "skincare", 
+                imgPromo: "1784230092565.jpg", 
+                imgReal: "1784230092565.jpg", 
+                description: "Formulados para el cuidado intensivo del contorno de ojos, ayudando a hidratar y mejorar la apariencia de la piel. Su combinación de colágeno, extractos de algas y retinol contribuye a una piel más suave. Contiene 80 parches.",
+                stock: 12
+            },
+            { 
+                id: 18, 
+                name: "Crema Hidratante Flor de Cerezo Bioaqua", 
+                price: 15000, 
+                category: "skincare", 
+                imgPromo: "1784230092578.jpg", 
+                imgReal: "1784230092578.jpg", 
+                description: "Revitaliza tu piel con la Crema Facial flor de cerezo, diseñada para nutrir, hidratar y restaurar la suavidad y elasticidad, devolviendo un aspecto fresco y luminoso.",
+                stock: 15
+            },
+            { 
+                id: 19, 
+                name: "Mascarilla Ácido Salicílico Bioaqua", 
+                price: 14000, 
+                category: "skincare", 
+                imgPromo: "1784230092591.jpg", 
+                imgReal: "1784230092591.jpg", 
+                description: "Combate eficazmente la piel grasa y poros obstruidos, penetrando profundamente para disolver restos de células muertas. Ideal para tratar barritos y poros rojos inflamados.",
+                stock: 9
+            },
+            { 
+                id: 20, 
+                name: "Hidratante Facial en Barra Lula", 
+                price: 21000, 
+                category: "skincare", 
+                imgPromo: "1784230092606.jpg", 
+                imgReal: "1784230092606.jpg", 
+                description: "Barra hidratante. Pepino: Calma y descongestiona con cafeína estimulante. Rosas: Devuelve la frescura y el brillo natural para pieles que lucen cansadas o sin vida.",
+                stock: 11
+            },
+            { 
+                id: 21, 
+                name: "Hidratante de Aloe Vera Lula", 
+                price: 19500, 
+                category: "skincare", 
+                imgPromo: "1784230092618.jpg", 
+                imgReal: "1784230092618.jpg", 
+                description: "Hidrata, nutre y calma la piel al instante. Textura fresca y de rápida absorción que te brinda una maravillosa sensación de confort. Rostro suave y equilibrado.",
+                stock: 14
+            },
+            { 
+                id: 22, 
+                name: "Vitamina C 100 ml Bioaqua", 
+                price: 16000, 
+                category: "skincare", 
+                imgPromo: "1784230092629.jpg", 
+                imgReal: "1784230092629.jpg", 
+                description: "Suero de vitamina C de alta concentración. Poderoso antioxidante que desacelera la oxidación celular y previene el envejecimiento prematuro de la piel.",
+                stock: 8
+            },
+            { 
+                id: 23, 
+                name: "Serum Rejuvenecedor Colágeno Bioaqua", 
+                price: 12000, 
+                category: "skincare", 
+                imgPromo: "1784230092637.jpg", 
+                imgReal: "1784230092637.jpg", 
+                description: "Suero facial enriquecido con colágeno tipo III, formulado para hidratar profundamente, revitalizar la piel, mejorar la firmeza y aportar una apariencia más juvenil.",
+                stock: 13
+            },
+            { 
+                id: 24, 
+                name: "Contorno de Ojos con Aloe Vera Lula", 
+                price: 19500, 
+                category: "skincare", 
+                imgPromo: "1784230092646.jpg", 
+                imgReal: "1784230092646.jpg", 
+                description: "Cremita ligera que hidrata, revitaliza y despierta la mirada. Reduce la apariencia de ojeras, bolsas y finas líneas de expresión de la zona ocular.",
+                stock: 10
+            },
+            { 
+                id: 25, 
+                name: "Contorno para Ojos de Arándanos Bioaqua", 
+                price: 9000, 
+                category: "skincare", 
+                imgPromo: "1784230092653.jpg", 
+                imgReal: "1784230092653.jpg", 
+                description: "Nutrición intensiva para el área delicada de tus ojos. Ayuda a revitalizar, suavizar y desinflamar la piel para lucir una mirada más joven y fresca.",
+                stock: 16
+            },
+            { 
+                id: 8, 
+                name: "Lip Balm Hidratante Karite con Destellos", 
+                price: 7000, 
+                category: "labios", 
+                imgPromo: "1784230092457.jpg", 
+                imgReal: "1784230092467.jpg",  
+                description: "Bálsamo labial ultra hidratante que aporta nutrición intensa y deja un acabado con sutiles y elegantes destellos mágicos. Perfecto para tus labios secos.",
+                stock: 20
+            },
+            { 
+                id: 9, 
+                name: "Bálsamo Hidratante Frutal Bioaqua", 
+                price: 5000, 
+                category: "labios", 
+                imgPromo: "1784230092477_2.jpg", 
+                imgReal: "1784230092488.jpg",  
+                description: "Bálsamo labial hidratante disponible en extractos naturales. Restaura la jugosidad natural de tus labios y previene el agrietamiento.",
+                stock: 25
+            },
+            { 
+                id: 12, 
+                name: "Bálsamo Hidratante en Barra Long Lasting Ushas", 
+                price: 8000, 
+                category: "labios", 
+                imgPromo: "1784230092499.jpg", 
+                imgReal: "1784230092509.jpg",  
+                description: "Bálsamo labial de larga duración marca Ushas. No aporta color, ideal para mantener tus labios nutridos con un brillo sutil y natural durante todo el día.",
+                stock: 15
+            },
+            { 
+                id: 13, 
+                name: "Mascarilla Reparadora de Labios Alissha", 
+                price: 11500, 
+                category: "labios", 
+                imgPromo: "1784230092519.jpg", 
+                imgReal: "1784230092527.jpg",  
+                description: "Overnight Lip Mask Alissha Rosy Kiss. Enriquecida con ácido hialurónico, aceites esenciales y vitaminas para una restauración profunda mientras duermes.",
+                stock: 10
+            },
+            { 
+                id: 14, 
+                name: "Mini Splash Cabello y Cuerpo Purpure 100ml", 
+                price: 18000, 
+                category: "corporal", 
+                imgPromo: "1784230092533.jpg", 
+                imgReal: "1784230092539.jpg",  
+                description: "Disfruta de una sensación de frescura inmediata en tu cuerpo y cabello con nuestro splash de deliciosos y duraderos aromas dulces y envolventes.",
+                stock: 12
+            },
+            { 
+                id: 10, 
+                name: "Vestido Modesto Colección Premium", 
+                price: 110000, 
+                category: "moda", 
+                imgPromo: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop&q=80", 
+                imgReal: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop&q=80",  
+                description: "Vestido elegante de alta calidad. Diseñado bajo el concepto de Moda Modesta, con manga larga, cuello refinado y caída fluida. Una pieza sofisticada de nuestra línea de vestir.",
+                stock: 5
+            },
+            { 
+                id: 11, 
+                name: "Blusa Modesta Soft Elegance", 
+                price: 65000, 
+                category: "moda", 
+                imgPromo: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&auto=format&fit=crop&q=80", 
+                imgReal: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&auto=format&fit=crop&q=80",  
+                description: "Blusa delicada de textura sumamente suave que conjuga sobriedad y tendencia. Ideal para ocasiones formales o de uso diario en donde resalta la comodidad y la elegancia.",
+                stock: 6
+            }
+        ];
+
+        let cart = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+        let detailQtyCount = 1;
+        let selectedProductForDetail = null;
+        let activeImageStates = {}; 
+
+        // Al iniciar la app
+        window.onload = function() {
+            // Inicializar estados de fotos
+            products.forEach(p => {
+                activeImageStates[p.id] = 'promo'; 
+            });
+
+            updateCategoryBadges();
+            renderCatalog();
+            setupSearch();
+        };
+
+        function renderCatalog() {
+            const grid = document.getElementById('productsGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            // Filtrar productos
+            const filtered = products.filter(product => {
+                const matchesCategory = currentCategory === 'all' || product.category === currentCategory;
+                const matchesSearch = product.name.toLowerCase().includes(searchQuery) || 
+                                      product.description.toLowerCase().includes(searchQuery);
+                return matchesCategory && matchesSearch;
+            });
+
+            // Actualizar contador
+            document.getElementById('itemsFoundText').textContent = `Encontramos ${filtered.length} productos`;
+
+            // Limpiar grilla
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            filtered.forEach(p => {
+                const isRealActive = activeImageStates[p.id] === 'real';
+                const currentImg = isRealActive ? p.imgReal : p.imgPromo;
+                
+                // Formatear precio
+                const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price);
+
+                let catLabel = "Moda Modesta";
+                if (p.category === 'skincare') catLabel = "Cuidado Facial";
+                else if (p.category === 'labios') catLabel = "Labios";
+                else if (p.category === 'corporal') catLabel = "Splash & Corporal";
+
+                const cardHTML = `
+                    <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 p-2.5 flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow fade-in relative">
+                        <!-- Switcher para ver foto real o promocional si difieren -->
+                        ${p.imgPromo !== p.imgReal ? `
+                            <button onclick="toggleCardImage(${p.id}, event)" class="absolute top-3 left-3 z-10 bg-white/95 border border-madek-accent text-[8px] font-bold py-1 px-2.5 rounded-full shadow-sm text-madek-blue active:scale-95 transition-all">
+                                <i class="fa-solid fa-camera"></i> ${isRealActive ? 'Ver Catálogo' : 'Ver Foto Real'}
+                            </button>
+                        ` : ''}
+
+                        <div onclick="openProductDetail(${p.id})" class="cursor-pointer">
+                            <!-- Contenedor Imagen -->
+                            <div class="bg-madek-cream/50 rounded-xl overflow-hidden aspect-square mb-2.5 flex items-center justify-center relative border border-gray-50">
+                                <img src="${currentImg}" alt="${p.name}" class="object-cover w-full h-full transition-transform duration-300" id="img-${p.id}" onerror="this.src='https://placehold.co/300x300/0043A4/white?text=${p.name}'">
+                            </div>
+
+                            <!-- Info del producto -->
+                            <span class="text-[9px] uppercase tracking-wider text-madek-blue font-bold block mb-0.5">${catLabel}</span>
+                            <h3 class="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">${p.name}</h3>
+                        </div>
+
+                        <!-- Botón y Precio -->
+                        <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100">
+                            <span class="text-sm font-bold text-madek-blue">${formattedPrice}</span>
+                            <button onclick="quickAddToCart(${p.id}, event)" class="w-8 h-8 rounded-full bg-madek-blue hover:bg-madek-blueDark text-white flex items-center justify-center active:scale-90 transition-all shadow-sm" aria-label="Añadir a la bolsa">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
+        function toggleCardImage(productId, event) {
+            if (event) event.stopPropagation();
+            
+            if (activeImageStates[productId] === 'promo') {
+                activeImageStates[productId] = 'real';
+            } else {
+                activeImageStates[productId] = 'promo';
+            }
+            renderCatalog();
+        }
+
+        // Configuración de Búsqueda
+        function setupSearch() {
+            const input = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearSearchBtn');
+
+            input.addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase().trim();
+                
+                if (searchQuery.length > 0) {
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    clearBtn.classList.add('hidden');
+                }
+                renderCatalog();
+            });
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('searchInput');
+            input.value = '';
+            searchQuery = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            renderCatalog();
+        }
+
+        function updateCategoryBadges() {
+            document.getElementById('allCount').textContent = products.length;
+            document.getElementById('skincareCount').textContent = products.filter(p => p.category === 'skincare').length;
+            document.getElementById('labiosCount').textContent = products.filter(p => p.category === 'labios').length;
+            document.getElementById('corporalCount').textContent = products.filter(p => p.category === 'corporal').length;
+            document.getElementById('modaCount').textContent = products.filter(p => p.category === 'moda').length;
+        }
+
+        function filterCategory(category) {
+            currentCategory = category;
+            
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-madek-blue', 'text-white', 'shadow-sm');
+                btn.classList.add('bg-gray-50', 'text-gray-600', 'border', 'border-gray-200');
+            });
+
+            const activeBtn = document.getElementById(`catBtn-${category}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-madek-blue', 'text-white', 'shadow-sm');
+                activeBtn.classList.remove('bg-gray-50', 'text-gray-600', 'border', 'border-gray-200');
+            }
+
+            renderCatalog();
+        }
+
+        function resetFilters() {
+            currentCategory = 'all';
+            searchQuery = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            filterCategory('all');
+        }
+
+        function scrollToTopAndReset() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            resetFilters();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastText').textContent = message;
+            
+            toast.classList.remove('opacity-0');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0');
+            }, 2500);
+        }
+
+        function quickAddToCart(productId, event) {
+            if (event) event.stopPropagation();
+            const product = products.find(p => p.id === productId);
+            addToCart(product, 1);
+        }
+
+        function addToCart(product, qty) {
+            const existing = cart.find(item => item.product.id === product.id);
+            if (existing) {
+                existing.qty += qty;
+            } else {
+                cart.push({ product, qty });
+            }
+            showToast(`¡Añadido: ${product.name}! 🛍️`);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const itemsList = document.getElementById('cartItemsList');
+            const totalEl = document.getElementById('cartTotal');
+            
+            const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
+            
+            const badges = [
+                document.getElementById('cartCountBadge'),
+                document.getElementById('mobileCartCount')
+            ];
+
+            badges.forEach(badge => {
+                if (badge) {
+                    if (totalQty > 0) {
+                        badge.textContent = totalQty;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            });
+
+            itemsList.innerHTML = '';
+
+            if (cart.length === 0) {
+                itemsList.innerHTML = `
+                    <div class="text-center py-12 px-4">
+                        <i class="fa-solid fa-basket-shopping text-gray-200 text-5xl mb-3 block"></i>
+                        <h4 class="font-bold text-gray-700 text-sm">Tu bolsa está vacía</h4>
+                        <p class="text-xs text-gray-400 mt-1">Explora nuestros productos de belleza y escoge tus preferidos.</p>
+                    </div>
+                `;
+                totalEl.textContent = '$0';
+                return;
+            }
+
+            let grandTotal = 0;
+
+            cart.forEach((item, index) => {
+                const lineTotal = item.product.price * item.qty;
+                grandTotal += lineTotal;
+
+                const formattedLineTotal = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(lineTotal);
+
+                const itemHTML = `
+                    <div class="flex items-center gap-3 bg-gray-50 rounded-xl p-3 border border-gray-100 relative">
+                        <button onclick="removeCartItem(${index})" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 p-1" aria-label="Eliminar del carro">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                        
+                        <div class="w-12 h-12 bg-white rounded-lg overflow-hidden flex items-center justify-center shrink-0 border border-gray-100">
+                            <img src="${item.product.imgPromo}" alt="${item.product.name}" class="object-cover w-full h-full">
+                        </div>
+
+                        <div class="flex-1 pr-5">
+                            <h4 class="text-xs font-bold text-gray-800 line-clamp-1">${item.product.name}</h4>
+                            <span class="text-[10px] text-madek-blue font-bold block mt-1">${formattedLineTotal}</span>
+                            
+                            <div class="flex items-center justify-between mt-2">
+                                <div class="flex items-center border border-gray-200 rounded-lg bg-white px-1.5 py-0.5">
+                                    <button onclick="updateCartQty(${index}, -1)" class="p-0.5 text-gray-400 hover:text-gray-800"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                                    <span class="px-2.5 text-xs font-bold text-gray-800">${item.qty}</span>
+                                    <button onclick="updateCartQty(${index}, 1)" class="p-0.5 text-gray-400 hover:text-gray-800"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                itemsList.insertAdjacentHTML('beforeend', itemHTML);
+            });
+
+            totalEl.textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(grandTotal);
+        }
+
+        function updateCartQty(index, amt) {
+            cart[index].qty += amt;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function removeCartItem(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function openCartDrawer() {
+            closeProductDetail();
+            const drawer = document.getElementById('cartDrawer');
+            const container = document.getElementById('cartDrawerContainer');
+            
+            // Hacemos el modal visible quitando 'hidden' para evitar bloqueo de clicks traseros
+            drawer.classList.remove('hidden');
+            setTimeout(() => {
+                container.classList.remove('translate-y-full');
+            }, 10);
+            updateCartUI();
+        }
+
+        function closeCartDrawer() {
+            const drawer = document.getElementById('cartDrawer');
+            const container = document.getElementById('cartDrawerContainer');
+            
+            container.classList.add('translate-y-full');
+            setTimeout(() => {
+                drawer.classList.add('hidden');
+            }, 300);
+        }
+
+        function openProductDetail(productId) {
+            const product = products.find(p => p.id === productId);
+            selectedProductForDetail = product;
+            detailQtyCount = 1;
+            document.getElementById('detailQty').textContent = detailQtyCount;
+
+            // Datos del Modal
+            document.getElementById('detailProductName').textContent = product.name;
+            
+            let catLabel = "Moda Modesta";
+            if (product.category === 'skincare') catLabel = "Cuidado Facial";
+            else if (product.category === 'labios') catLabel = "Labios";
+            else if (product.category === 'corporal') catLabel = "Splash & Corporal";
+
+            document.getElementById('detailProductCategory').textContent = catLabel;
+            document.getElementById('detailProductPrice').textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price);
+            document.getElementById('detailProductDesc').textContent = product.description;
+
+            // Imagen Inicial
+            let currentImgState = activeImageStates[product.id] || 'promo';
+            setDetailImageState(currentImgState);
+
+            // Switcher de Foto Real
+            const switcher = document.getElementById('detailSwitchBtn');
+            if (product.imgPromo !== product.imgReal) {
+                switcher.classList.remove('hidden');
+                switcher.onclick = function() {
+                    let activeState = activeImageStates[product.id];
+                    let newState = activeState === 'promo' ? 'real' : 'promo';
+                    activeImageStates[product.id] = newState; 
+                    setDetailImageState(newState);
+                };
+            } else {
+                switcher.classList.add('hidden');
+            }
+
+            // Añadir al carrito
+            const addButton = document.getElementById('addDetailToCartBtn');
+            addButton.onclick = () => {
+                addToCart(product, detailQtyCount);
+                closeProductDetail();
+            };
+
+            // Pedido Directo
+            const directWap = document.getElementById('directWapBtn');
+            directWap.onclick = () => {
+                const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price * detailQtyCount);
+                const message = `Hola Madek, me gustaría ordenar el siguiente producto:\n\n*${product.name}*\nCantidad: ${detailQtyCount}\nTotal estimado: ${formattedPrice}\n\nQuedo atenta(o) para coordinar el pago y envío. ✨`;
+                const wapLink = `https://wa.me/573224499253?text=${encodeURIComponent(message)}`;
+                window.open(wapLink, '_blank');
+            };
+
+            // Mostrar el modal quitando la clase hidden
+            const modal = document.getElementById('detailModal');
+            const container = document.getElementById('detailModalContainer');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                container.classList.remove('translate-y-full');
+            }, 10);
+        }
+
+        function setDetailImageState(state) {
+            const imgEl = document.getElementById('detailProductImage');
+            const textEl = document.getElementById('detailSwitchText');
+            
+            if (state === 'real') {
+                imgEl.src = selectedProductForDetail.imgReal;
+                textEl.textContent = 'Ver Catálogo';
+            } else {
+                imgEl.src = selectedProductForDetail.imgPromo;
+                textEl.textContent = 'Ver Foto Real';
+            }
+        }
+
+        function closeProductDetail() {
+            const modal = document.getElementById('detailModal');
+            const container = document.getElementById('detailModalContainer');
+            
+            container.classList.add('translate-y-full');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                selectedProductForDetail = null;
+            }, 300);
+        }
+
+        function incrementDetailQty() {
+            detailQtyCount++;
+            document.getElementById('detailQty').textContent = detailQtyCount;
+        }
+
+        function decrementDetailQty() {
+            if (detailQtyCount > 1) {
+                detailQtyCount--;
+                document.getElementById('detailQty').textContent = detailQtyCount;
+            }
+        }
+
+        function sendOrderViaWhatsApp() {
+            if (cart.length === 0) return;
+
+            const name = document.getElementById('cust_name').value.trim();
+            const city = document.getElementById('cust_city').value.trim();
+
+            if (!name || !city) {
+                showToast("Por favor ingresa tu Nombre y Ciudad de entrega. ✍️");
+                return;
+            }
+
+            let message = `🛍️ *NUEVO PEDIDO DE COMPRA - MADEK*\n\n`;
+            message += `*Cliente:* ${name}\n`;
+            message += `*Ciudad:* ${city}\n`;
+            message += `-------------------------------------------\n\n`;
+
+            let grandTotal = 0;
+            cart.forEach(item => {
+                const lineTotal = item.product.price * item.qty;
+                grandTotal += lineTotal;
+                const formattedLineTotal = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(lineTotal);
+                
+                message += `• *${item.qty}x* ${item.product.name}\n`;
+                message += `  Subtotal: ${formattedLineTotal}\n\n`;
+            });
+
+            const formattedTotal = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(grandTotal);
+            message += `-------------------------------------------\n`;
+            message += `*TOTAL ESTIMADO:* ${formattedTotal}\n\n`;
+            message += `Por favor, confirmen la disponibilidad para realizar el pago. ¡Gracias! ✨`;
+
+            const whatsappNumber = "573224499253";
+            const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappURL, '_blank');
+            
+            // Limpieza posterior al envío
+            cart = [];
+            updateCartUI();
+            closeCartDrawer();
+            
+            document.getElementById('cust_name').value = '';
+            document.getElementById('cust_city').value = '';
+        }
+    </script>
+</body>
+</html>
