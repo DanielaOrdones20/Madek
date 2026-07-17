@@ -835,52 +835,51 @@
         }
 
         function openProductDetail(productId) {
-            const product = products.find(p => p.id === productId);
-            selectedProductForDetail = product;
-            detailQtyCount = 1;
-            document.getElementById('detailQty').textContent = detailQtyCount;
+    const product = products.find(p => p.id === productId);
+    selectedProductForDetail = product;
+    detailQtyCount = 1;
+    document.getElementById('detailQty').textContent = detailQtyCount;
 
-            // Datos del Modal
-            document.getElementById('detailProductName').textContent = product.name;
-            
-            let catLabel = "Moda Modesta";
-            if (product.category === 'skincare') catLabel = "Cuidado Facial";
-            else if (product.category === 'labios') catLabel = "Labios";
-            else if (product.category === 'corporal') catLabel = "Splash & Corporal";
+    // Datos del Modal
+    document.getElementById('detailProductName').textContent = product.name;
+    
+    let catLabel = "Moda Modesta";
+    if (product.category === 'skincare') catLabel = "Cuidado Facial";
+    else if (product.category === 'labios') catLabel = "Labios";
+    else if (product.category === 'corporal') catLabel = "Splash & Corporal";
 
-            document.getElementById('detailProductCategory').textContent = catLabel;
-            document.getElementById('detailProductPrice').textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price);
-            document.getElementById('detailProductDesc').textContent = product.description;
+    document.getElementById('detailProductCategory').textContent = catLabel;
+    document.getElementById('detailProductPrice').textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price);
+    document.getElementById('detailProductDesc').textContent = product.description;
 
-            // Imagen Inicial
-            let currentImgState = activeImageStates[product.id] || 'promo';
-            setDetailImageState(currentImgState);
+    // Imagen Inicial (Cargamos la imagen promocional directamente)
+    document.getElementById('detailProductImage').src = product.imgPromo;
 
-            // Añadir al carrito
-            const addButton = document.getElementById('addDetailToCartBtn');
-            addButton.onclick = () => {
-                addToCart(product, detailQtyCount);
-                closeProductDetail();
-            };
+    // Añadir al carrito
+    const addButton = document.getElementById('addDetailToCartBtn');
+    addButton.onclick = () => {
+        addToCart(product, detailQtyCount);
+        closeProductDetail();
+    };
 
-            // Pedido Directo
-            const directWap = document.getElementById('directWapBtn');
-            directWap.onclick = () => {
-                const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price * detailQtyCount);
-                const message = `Hola Madek, me gustaría ordenar el siguiente producto:\n\n*${product.name}*\nCantidad: ${detailQtyCount}\nTotal estimado: ${formattedPrice}\n\nQuedo atenta(o) para coordinar el pago y envío. ✨`;
-                const wapLink = `https://wa.me/573224499253?text=${encodeURIComponent(message)}`;
-                window.open(wapLink, '_blank');
-            };
+    // Pedido Directo
+    const directWap = document.getElementById('directWapBtn');
+    directWap.onclick = () => {
+        const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price * detailQtyCount);
+        const message = `Hola Madek, me gustaría ordenar el siguiente producto:\n\n*${product.name}*\nCantidad: ${detailQtyCount}\nTotal estimado: ${formattedPrice}\n\nQuedo atenta(o) para coordinar el pago y envío. ✨`;
+        const wapLink = `https://wa.me/573224499253?text=${encodeURIComponent(message)}`;
+        window.open(wapLink, '_blank');
+    };
 
-            // Mostrar el modal quitando la clase hidden
-            const modal = document.getElementById('detailModal');
-            const container = document.getElementById('detailModalContainer');
-            
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                container.classList.remove('translate-y-full');
-            }, 10);
-        }
+    // Mostrar el modal
+    const modal = document.getElementById('detailModal');
+    const container = document.getElementById('detailModalContainer');
+    
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        container.classList.remove('translate-y-full');
+    }, 10);
+}
 
         function setDetailImageState(state) {
             const imgEl = document.getElementById('detailProductImage');
