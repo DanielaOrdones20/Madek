@@ -963,6 +963,194 @@
             document.getElementById('cust_name').value = '';
             document.getElementById('cust_city').value = '';
         }
+    </script>// ... (Tu array de productos 'products' queda igual)
+
+        let cart = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+        let detailQtyCount = 1;
+        let selectedProductForDetail = null;
+        let activeImageStates = {}; 
+
+        window.onload = function() {
+            products.forEach(p => { activeImageStates[p.id] = 'promo'; });
+            updateCategoryBadges();
+            renderCatalog();
+            setupSearch();
+        };
+
+        function renderCatalog() {
+            const grid = document.getElementById('productsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const filtered = products.filter(product => {
+                const matchesCategory = currentCategory === 'all' || product.category === currentCategory;
+                const matchesSearch = product.name.toLowerCase().includes(searchQuery) || 
+                                      product.description.toLowerCase().includes(searchQuery);
+                return matchesCategory && matchesSearch;
+            });
+
+            document.getElementById('itemsFoundText').textContent = `Encontramos ${filtered.length} productos`;
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            filtered.forEach(p => {
+                const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price);
+                let catLabel = p.category === 'skincare' ? "Cuidado Facial" : p.category === 'labios' ? "Labios" : p.category === 'corporal' ? "Splash & Corporal" : "Moda Modesta";
+
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 p-2.5 flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow fade-in">
+                        <div onclick="openProductDetail(${p.id})" class="cursor-pointer">
+                            <div class="bg-madek-cream/50 rounded-xl overflow-hidden aspect-square mb-2.5 flex items-center justify-center border border-gray-50">
+                                <img src="${p.imgPromo}" alt="${p.name}" class="object-cover w-full h-full" onerror="this.src='https://placehold.co/300x300/0043A4/white?text=Madek'">
+                            </div>
+                            <span class="text-[9px] uppercase tracking-wider text-madek-blue font-bold block mb-0.5">${catLabel}</span>
+                            <h3 class="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">${p.name}</h3>
+                        </div>
+                        <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100">
+                            <span class="text-sm font-bold text-madek-blue">${formattedPrice}</span>
+                            <button onclick="quickAddToCart(${p.id}, event)" class="w-8 h-8 rounded-full bg-madek-blue text-white flex items-center justify-center active:scale-90 transition-all"><i class="fa-solid fa-plus text-xs"></i></button>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        function setupSearch() {
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase().trim();
+                document.getElementById('clearSearchBtn').classList.toggle('hidden', searchQuery.length === 0);
+                renderCatalog();
+            });
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            renderCatalog();
+        }
+
+        function updateCategoryBadges() {
+            ['all', 'skincare', 'labios', 'corporal', 'moda'].forEach(cat => {
+                const count = cat === 'all' ? products.length : products.filter(p => p.category === cat).length;
+                const el = document.getElementById(`${cat}Count`);
+                if(el) el.textContent = count;
+            });
+        }
+
+        function filterCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.toggle('bg-madek-blue', btn.id === `catBtn-${category}`);
+                btn.classList.toggle('text-white', btn.id === `catBtn-${category}`);
+            });
+            renderCatalog();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastText').textContent = message;
+            toast.classList.replace('opacity-0', 'opacity-100');
+            setTimeout(() => toast.classList.replace('opacity-100', 'opacity-0'), 2500);
+        }
+
+        function quickAddToCart(productId, event) {
+            if (event) event.stopPropagation();
+            const product = products.find(p => p.id === productId);
+            addToCart(product, 1);
+        }
+
+        function addToCart(product, qty) {
+            const existing = cart.find(item => item.product.id === product.id);
+            existing ? existing.qty += qty : cart.push({ product, qty });
+            showToast(`¡Añadido: ${product.name}! 🛍️`);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const itemsList = document.getElementById('cartItemsList');
+            const totalEl = document.getElementById('cartTotal');
+            const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
+            
+            document.querySelectorAll('#cartCountBadge, #mobileCartCount').forEach(b => {
+                b.textContent = totalQty;
+                b.classList.toggle('hidden', totalQty === 0);
+            });
+
+            itemsList.innerHTML = cart.length === 0 ? '<p class="text-center text-xs text-gray-400 py-10">Bolsa vacía</p>' : '';
+            let grandTotal = 0;
+            cart.forEach((item, index) => {
+                grandTotal += (item.product.price * item.qty);
+                itemsList.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center gap-3 bg-gray-50 rounded-xl p-3 border border-gray-100">
+                        <div class="w-12 h-12 bg-white rounded-lg border border-gray-100 overflow-hidden"><img src="${item.product.imgPromo}" class="object-cover w-full h-full"></div>
+                        <div class="flex-1">
+                            <h4 class="text-xs font-bold text-gray-800">${item.product.name}</h4>
+                            <div class="flex items-center gap-2 mt-1">
+                                <button onclick="updateCartQty(${index}, -1)" class="text-gray-400"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                                <span class="text-xs font-bold">${item.qty}</span>
+                                <button onclick="updateCartQty(${index}, 1)" class="text-gray-400"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+            totalEl.textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(grandTotal);
+        }
+
+        function updateCartQty(index, amt) {
+            cart[index].qty += amt;
+            if (cart[index].qty <= 0) cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function openCartDrawer() {
+            const drawer = document.getElementById('cartDrawer');
+            drawer.classList.remove('hidden');
+            setTimeout(() => document.getElementById('cartDrawerContainer').classList.remove('translate-y-full'), 10);
+            updateCartUI();
+        }
+
+        function closeCartDrawer() {
+            document.getElementById('cartDrawerContainer').classList.add('translate-y-full');
+            setTimeout(() => document.getElementById('cartDrawer').classList.add('hidden'), 300);
+        }
+
+        function openProductDetail(productId) {
+            const product = products.find(p => p.id === productId);
+            selectedProductForDetail = product;
+            document.getElementById('detailProductName').textContent = product.name;
+            document.getElementById('detailProductPrice').textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price);
+            document.getElementById('detailProductDesc').textContent = product.description;
+            document.getElementById('detailProductImage').src = product.imgPromo;
+            
+            document.getElementById('detailModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('detailModalContainer').classList.remove('translate-y-full'), 10);
+        }
+
+        function closeProductDetail() {
+            document.getElementById('detailModalContainer').classList.add('translate-y-full');
+            setTimeout(() => document.getElementById('detailModal').classList.add('hidden'), 300);
+        }
+
+        function sendOrderViaWhatsApp() {
+            const name = document.getElementById('cust_name').value;
+            const city = document.getElementById('cust_city').value;
+            if(!name || !city) return showToast("Escribe tu nombre y ciudad");
+            let msg = `Pedido: ${name} (${city})\n\n` + cart.map(i => `• ${i.qty}x ${i.product.name}`).join('\n');
+            window.open(`https://wa.me/573224499253?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function incrementDetailQty() { detailQtyCount++; document.getElementById('detailQty').textContent = detailQtyCount; }
+        function decrementDetailQty() { if(detailQtyCount > 1) { detailQtyCount--; document.getElementById('detailQty').textContent = detailQtyCount; } }
     </script>
 </body>
 </html>
