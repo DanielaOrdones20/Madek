@@ -334,7 +334,7 @@
                 category: "skincare", 
                 imgPromo: "Imagen 19.jpg",
                 description: "Tratamiento completo de tres pasos que controla la grasa, ayuda a desvanecer y cicatrizar marcas de acné previniendo nuevos brotes. Hidrata profundamente sin tapar los poros de tu rostro.",
-                stock: 0
+                stock: 8
             },
             { 
                 id: 4, 
@@ -561,15 +561,11 @@
 
             // Filtrar productos
             const filtered = products.filter(product => {
-
                 const matchesCategory = currentCategory === 'all' || product.category === currentCategory;
                 const matchesSearch = product.name.toLowerCase().includes(searchQuery) || 
                                       product.description.toLowerCase().includes(searchQuery);
                 return matchesCategory && matchesSearch;
             });
-                console.log("Categoría activa:", currentCategory);
-                 console.log("Filtro total de productos:", products.length);
-                 console.log("Productos filtrados:", filtered);
 
             // Actualizar contador
             document.getElementById('itemsFoundText').textContent = `Encontramos ${filtered.length} productos`;
@@ -585,21 +581,13 @@
 
             grid.classList.remove('hidden');
             emptyState.classList.add('hidden');
-            
-            filtered.forEach(p => {
-                // Seguridad: inicializar estados si no existen
-                if (typeof activeImageStates === 'undefined') activeImageStates = {};
-                if (activeImageStates[p.id] === undefined) activeImageStates[p.id] = 'promo';
 
+            filtered.forEach(p => {
                 const isRealActive = activeImageStates[p.id] === 'real';
-                const currentImg = isRealActive ? (p.imgReal || p.imgPromo) : p.imgPromo;
+                const currentImg = isRealActive ? p.imgReal : p.imgPromo;
                 
-                const isOutOfStock = (p.stock === 0);
-                const stockBadge = isOutOfStock 
-                    ? `<div class="absolute top-2 left-2 bg-red-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold z-10 uppercase">Agotado</div>` 
-                    : '';
-                
-                const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price || 0);
+                // Formatear precio
+                const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price);
 
                 let catLabel = "Moda Modesta";
                 if (p.category === 'skincare') catLabel = "Cuidado Facial";
@@ -608,25 +596,32 @@
 
                 const cardHTML = `
                     <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 p-2.5 flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow fade-in relative">
-                        ${stockBadge}
-                        <div onclick="openProductDetail(${p.id})" class="cursor-pointer ${isOutOfStock ? 'opacity-60' : ''}">
+                        <!-- Switcher para ver foto real o promocional si difieren -->
+                
+                        <div onclick="openProductDetail(${p.id})" class="cursor-pointer">
+                            <!-- Contenedor Imagen -->
                             <div class="bg-madek-cream/50 rounded-xl overflow-hidden aspect-square mb-2.5 flex items-center justify-center relative border border-gray-50">
-                                <img src="${currentImg}" alt="${p.name || 'Producto'}" class="object-cover w-full h-full transition-transform duration-300" id="img-${p.id}" onerror="this.src='https://placehold.co/300x300/0043A4/white?text=Madek'">
+                                <img src="${currentImg}" alt="${p.name}" class="object-cover w-full h-full transition-transform duration-300" id="img-${p.id}" onerror="this.src='https://placehold.co/300x300/0043A4/white?text=${p.name}'">
                             </div>
+
+                            <!-- Info del producto -->
                             <span class="text-[9px] uppercase tracking-wider text-madek-blue font-bold block mb-0.5">${catLabel}</span>
-                            <h3 class="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">${p.name || 'Sin nombre'}</h3>
+                            <h3 class="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">${p.name}</h3>
                         </div>
+
+                        <!-- Botón y Precio -->
                         <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100">
                             <span class="text-sm font-bold text-madek-blue">${formattedPrice}</span>
-                            <button ${isOutOfStock ? 'disabled class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center cursor-not-allowed"' : 'onclick="quickAddToCart('+p.id+', event)" class="w-8 h-8 rounded-full bg-madek-blue hover:bg-madek-blueDark text-white flex items-center justify-center active:scale-90 transition-all shadow-sm"'} aria-label="Añadir a la bolsa">
-                                <i class="fa-solid ${isOutOfStock ? 'fa-ban' : 'fa-plus'} text-xs"></i>
+                            <button onclick="quickAddToCart(${p.id}, event)" class="w-8 h-8 rounded-full bg-madek-blue hover:bg-madek-blueDark text-white flex items-center justify-center active:scale-90 transition-all shadow-sm" aria-label="Añadir a la bolsa">
+                                <i class="fa-solid fa-plus text-xs"></i>
                             </button>
                         </div>
                     </div>
                 `;
                 grid.insertAdjacentHTML('beforeend', cardHTML);
             });
-            
+        }
+
         function toggleCardImage(productId, event) {
             if (event) event.stopPropagation();
             
@@ -842,31 +837,31 @@
         }
 
         function openProductDetail(productId) {
-               const product = products.find(p => p.id === productId);
-                selectedProductForDetail = product;
-                detailQtyCount = 1;
-                document.getElementById('detailQty').textContent = detailQtyCount;
+    const product = products.find(p => p.id === productId);
+    selectedProductForDetail = product;
+    detailQtyCount = 1;
+    document.getElementById('detailQty').textContent = detailQtyCount;
 
-                // Datos del Modal
-                document.getElementById('detailProductName').textContent = product.name;
+    // Datos del Modal
+    document.getElementById('detailProductName').textContent = product.name;
     
-                let catLabel = "Moda Modesta";
-                if (product.category === 'skincare') catLabel = "Cuidado Facial";
-                else if (product.category === 'labios') catLabel = "Labios";
-                else if (product.category === 'corporal') catLabel = "Splash & Corporal";
+    let catLabel = "Moda Modesta";
+    if (product.category === 'skincare') catLabel = "Cuidado Facial";
+    else if (product.category === 'labios') catLabel = "Labios";
+    else if (product.category === 'corporal') catLabel = "Splash & Corporal";
 
-                document.getElementById('detailProductCategory').textContent = catLabel;
-                document.getElementById('detailProductPrice').textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price);
-                document.getElementById('detailProductDesc').textContent = product.description;
+    document.getElementById('detailProductCategory').textContent = catLabel;
+    document.getElementById('detailProductPrice').textContent = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price);
+    document.getElementById('detailProductDesc').textContent = product.description;
 
-               // Imagen Inicial (Cargamos la imagen promocional directamente)
-               document.getElementById('detailProductImage').src = product.imgPromo;
+    // Imagen Inicial (Cargamos la imagen promocional directamente)
+    document.getElementById('detailProductImage').src = product.imgPromo;
 
-              // Añadir al carrito
-                const addButton = document.getElementById('addDetailToCartBtn');
-               addButton.onclick = () => {
-                 addToCart(product, detailQtyCount);
-                    closeProductDetail();
+    // Añadir al carrito
+    const addButton = document.getElementById('addDetailToCartBtn');
+    addButton.onclick = () => {
+        addToCart(product, detailQtyCount);
+        closeProductDetail();
     };
 
     // Pedido Directo
@@ -968,10 +963,6 @@
             document.getElementById('cust_name').value = '';
             document.getElementById('cust_city').value = '';
         }
-            document.addEventListener('DOMContentLoaded', () => {
-            renderCatalog();
-            setupSearch();
-        });
         </script>
 </body>
 </html>
