@@ -538,66 +538,50 @@
             }
         ];*/
 
-// Variable global para guardar los productos que vienen de Google
+// 1. Variables globales
 let products = [];
+let cart = [];
+let currentCategory = 'all';
+let searchQuery = '';
+let detailQtyCount = 1;
+let selectedProductForDetail = null;
+let activeImageStates = {}; 
 
-// Función para obtener productos desde Google Sheets
+// 2. Función para obtener productos desde Google Sheets
 async function fetchProducts() {
-    const url = "https://script.google.com/macros/s/AKfycbzB1GDIEBgudoc3yJ9FPHwM6VSDN8adM-W0pex_C47OcqeH1BQCQwJPtBaQ0gNV5dPsrw/exec"; // Pega aquí la URL que copiaste
+    const url = "https://script.google.com/macros/s/AKfycbzB1GDIEBgudoc3yJ9FPHwM6VSDN8adM-W0pex_C47OcqeH1BQCQwJPtBaQ0gNV5dPsrw/exec";
     try {
         const response = await fetch(url);
         products = await response.json();
-        renderCatalog(); // Volvemos a dibujar la pantalla con los datos nuevos
+        
+        // 3. Después de recibir los productos, inicializamos el resto
+        inicializarApp(); 
     } catch (error) {
         console.error("Error al cargar productos:", error);
     }
 }
 
-// Llama a esta función en tu window.onload
+// 4. Función para inicializar todo
+function inicializarApp() {
+    products.forEach(p => {
+        activeImageStates[p.id] = 'promo'; 
+    });
+
+    updateCategoryBadges();
+    renderCatalog();
+    setupSearch();
+}
+
+// 5. Un solo window.onload
 window.onload = function() {
-    fetchProducts(); // Carga desde la nube en lugar de usar la lista fija
-    // ... resto de tu código de inicialización ...
+    fetchProducts();
 };
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         
-
-        let cart = [];
-        let currentCategory = 'all';
-        let searchQuery = '';
-        let detailQtyCount = 1;
-        let selectedProductForDetail = null;
-        let activeImageStates = {}; 
-
-        // Al iniciar la app
-        window.onload = function() {
-            // Inicializar estados de fotos
-            products.forEach(p => {
-                activeImageStates[p.id] = 'promo'; 
-            });
-
-            updateCategoryBadges();
-            renderCatalog();
-            setupSearch();
-        };
-
         function renderCatalog() {
             const grid = document.getElementById('productsGrid');
             const emptyState = document.getElementById('emptyState');
