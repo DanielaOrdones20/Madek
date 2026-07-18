@@ -585,6 +585,7 @@
 
             grid.classList.remove('hidden');
             emptyState.classList.add('hidden');
+            
             filtered.forEach(p => {
                 // Seguridad: inicializar estados si no existen
                 if (typeof activeImageStates === 'undefined') activeImageStates = {};
@@ -967,6 +968,10 @@
             document.getElementById('cust_name').value = '';
             document.getElementById('cust_city').value = '';
         }
+            document.addEventListener('DOMContentLoaded', () => {
+            renderCatalog();
+            setupSearch();
+        });
         </script>
 </body>
 </html>
