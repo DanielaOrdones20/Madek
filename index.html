@@ -308,8 +308,6 @@
     </nav>
 
     <script>
-
-        /*
         const products = [
             { 
                 id: 1, 
@@ -536,52 +534,27 @@
                 description: "Lavarse la piel en la noche es un hábito clave de belleza, ya que permite que el rostro descanse de la contaminación y las impurezas acumuladas durante el día. Ayuda a mantener la piel más sana, fresca y luminosa, mientras limpia suavemente, hidrata, aclara el tono y elimina células muertas.",
                 stock: 0
             }
-        ];*/
+        ];
 
-// 1. Variables globales
-let products = [];
-let cart = [];
-let currentCategory = 'all';
-let searchQuery = '';
-let detailQtyCount = 1;
-let selectedProductForDetail = null;
-let activeImageStates = {}; 
+        let cart = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+        let detailQtyCount = 1;
+        let selectedProductForDetail = null;
+        let activeImageStates = {}; 
 
-// 2. Función para obtener productos desde Google Sheets
-async function fetchProducts() {
-    const url = "https://script.google.com/macros/s/AKfycbzB1GDIEBgudoc3yJ9FPHwM6VSDN8adM-W0pex_C47OcqeH1BQCQwJPtBaQ0gNV5dPsrw/exec";
-    try {
-        const response = await fetch(url);
-        products = await response.json();
-        
-        // 3. Después de recibir los productos, inicializamos el resto
-        inicializarApp(); 
-    } catch (error) {
-        console.error("Error al cargar productos:", error);
-    }
-}
+        // Al iniciar la app
+        window.onload = function() {
+            // Inicializar estados de fotos
+            products.forEach(p => {
+                activeImageStates[p.id] = 'promo'; 
+            });
 
-// 4. Función para inicializar todo
-function inicializarApp() {
-    products.forEach(p => {
-        activeImageStates[p.id] = 'promo'; 
-    });
+            updateCategoryBadges();
+            renderCatalog();
+            setupSearch();
+        };
 
-    updateCategoryBadges();
-    renderCatalog();
-    setupSearch();
-}
-
-// 5. Un solo window.onload
-window.onload = function() {
-    fetchProducts();
-};
-
-
-
-
-
-        
         function renderCatalog() {
             const grid = document.getElementById('productsGrid');
             const emptyState = document.getElementById('emptyState');
