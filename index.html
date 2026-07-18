@@ -561,11 +561,15 @@
 
             // Filtrar productos
             const filtered = products.filter(product => {
+
                 const matchesCategory = currentCategory === 'all' || product.category === currentCategory;
                 const matchesSearch = product.name.toLowerCase().includes(searchQuery) || 
                                       product.description.toLowerCase().includes(searchQuery);
                 return matchesCategory && matchesSearch;
             });
+                console.log("Categoría activa:", currentCategory);
+                 console.log("Filtro total de productos:", products.length);
+                 console.log("Productos filtrados:", filtered);
 
             // Actualizar contador
             document.getElementById('itemsFoundText').textContent = `Encontramos ${filtered.length} productos`;
