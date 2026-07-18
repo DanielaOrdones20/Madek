@@ -594,20 +594,7 @@
                 else if (p.category === 'labios') catLabel = "Labios";
                 else if (p.category === 'corporal') catLabel = "Splash & Corporal";
 
-                const cardHTML = `
-                    <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 p-2.5 flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow fade-in relative">
-                        <!-- Switcher para ver foto real o promocional si difieren -->
-                
-                        <div onclick="openProductDetail(${p.id})" class="cursor-pointer">
-                            <!-- Contenedor Imagen -->
-                            <div class="bg-madek-cream/50 rounded-xl overflow-hidden aspect-square mb-2.5 flex items-center justify-center relative border border-gray-50">
-                                <img src="${currentImg}" alt="${p.name}" class="object-cover w-full h-full transition-transform duration-300" id="img-${p.id}" onerror="this.src='https://placehold.co/300x300/0043A4/white?text=${p.name}'">
-                            </div>
-
-                            <!-- Info del producto -->
-                            <span class="text-[9px] uppercase tracking-wider text-madek-blue font-bold block mb-0.5">${catLabel}</span>
-                            <h3 class="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">${p.name}</h3>
-             const isOutOfStock = p.stock === 0; // Verifica si no hay inventario
+const isOutOfStock = p.stock === 0; // Verifica si no hay inventario
 
 const cardHTML = `
     <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 p-2.5 flex flex-col justify-between h-full shadow-sm relative ${isOutOfStock ? 'opacity-75' : ''}">
@@ -633,17 +620,7 @@ const cardHTML = `
                 </button>`}
         </div>
     </div>
-`;           </div>
-
-                        <!-- Botón y Precio -->
-                        <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100">
-                            <span class="text-sm font-bold text-madek-blue">${formattedPrice}</span>
-                            <button onclick="quickAddToCart(${p.id}, event)" class="w-8 h-8 rounded-full bg-madek-blue hover:bg-madek-blueDark text-white flex items-center justify-center active:scale-90 transition-all shadow-sm" aria-label="Añadir a la bolsa">
-                                <i class="fa-solid fa-plus text-xs"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
+`;
                 grid.insertAdjacentHTML('beforeend', cardHTML);
             });
         }
