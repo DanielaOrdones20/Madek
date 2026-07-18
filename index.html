@@ -308,6 +308,8 @@
     </nav>
 
     <script>
+
+        /*
         const products = [
             { 
                 id: 1, 
@@ -534,7 +536,48 @@
                 description: "Lavarse la piel en la noche es un hábito clave de belleza, ya que permite que el rostro descanse de la contaminación y las impurezas acumuladas durante el día. Ayuda a mantener la piel más sana, fresca y luminosa, mientras limpia suavemente, hidrata, aclara el tono y elimina células muertas.",
                 stock: 0
             }
-        ];
+        ];*/
+
+// Variable global para guardar los productos que vienen de Google
+let products = [];
+
+// Función para obtener productos desde Google Sheets
+async function fetchProducts() {
+    const url = "https://script.google.com/macros/s/AKfycbzB1GDIEBgudoc3yJ9FPHwM6VSDN8adM-W0pex_C47OcqeH1BQCQwJPtBaQ0gNV5dPsrw/exec"; // Pega aquí la URL que copiaste
+    try {
+        const response = await fetch(url);
+        products = await response.json();
+        renderCatalog(); // Volvemos a dibujar la pantalla con los datos nuevos
+    } catch (error) {
+        console.error("Error al cargar productos:", error);
+    }
+}
+
+// Llama a esta función en tu window.onload
+window.onload = function() {
+    fetchProducts(); // Carga desde la nube en lugar de usar la lista fija
+    // ... resto de tu código de inicialización ...
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
 
         let cart = [];
         let currentCategory = 'all';
