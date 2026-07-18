@@ -582,46 +582,53 @@
             grid.classList.remove('hidden');
             emptyState.classList.add('hidden');
 
-            filtered.forEach(p => {
-                const isRealActive = activeImageStates[p.id] === 'real';
-                const currentImg = isRealActive ? p.imgReal : p.imgPromo;
-                
-                // Formatear precio
-                const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price);
+           filtered.forEach(p => {
+    const isRealActive = activeImageStates[p.id] === 'real';
+    const currentImg = isRealActive ? p.imgReal : p.imgPromo;
+    
+    // Lógica de stock y etiquetas
+    const isOutOfStock = p.stock === 0;
+    const stockBadge = isOutOfStock 
+        ? `<div class="absolute top-2 left-2 bg-red-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold z-10 uppercase">Agotado</div>` 
+        : '';
+    
+    // Formatear precio
+    const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price);
 
-                let catLabel = "Moda Modesta";
-                if (p.category === 'skincare') catLabel = "Cuidado Facial";
-                else if (p.category === 'labios') catLabel = "Labios";
-                else if (p.category === 'corporal') catLabel = "Splash & Corporal";
+    let catLabel = "Moda Modesta";
+    if (p.category === 'skincare') catLabel = "Cuidado Facial";
+    else if (p.category === 'labios') catLabel = "Labios";
+    else if (p.category === 'corporal') catLabel = "Splash & Corporal";
 
-                const cardHTML = `
-                    <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 p-2.5 flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow fade-in relative">
-                        <!-- Switcher para ver foto real o promocional si difieren -->
-                
-                        <div onclick="openProductDetail(${p.id})" class="cursor-pointer">
-                            <!-- Contenedor Imagen -->
-                            <div class="bg-madek-cream/50 rounded-xl overflow-hidden aspect-square mb-2.5 flex items-center justify-center relative border border-gray-50">
-                                <img src="${currentImg}" alt="${p.name}" class="object-cover w-full h-full transition-transform duration-300" id="img-${p.id}" onerror="this.src='https://placehold.co/300x300/0043A4/white?text=${p.name}'">
-                            </div>
+    const cardHTML = `
+        <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 p-2.5 flex flex-col justify-between h-full shadow-sm hover:shadow-md transition-shadow fade-in relative">
+            ${stockBadge}
+            
+            <div onclick="openProductDetail(${p.id})" class="cursor-pointer ${isOutOfStock ? 'opacity-60' : ''}">
+                <!-- Contenedor Imagen -->
+                <div class="bg-madek-cream/50 rounded-xl overflow-hidden aspect-square mb-2.5 flex items-center justify-center relative border border-gray-50">
+                    <img src="${currentImg}" alt="${p.name}" class="object-cover w-full h-full transition-transform duration-300" id="img-${p.id}" onerror="this.src='https://placehold.co/300x300/0043A4/white?text=${p.name}'">
+                </div>
 
-                            <!-- Info del producto -->
-                            <span class="text-[9px] uppercase tracking-wider text-madek-blue font-bold block mb-0.5">${catLabel}</span>
-                            <h3 class="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">${p.name}</h3>
-                        </div>
+                <!-- Info del producto -->
+                <span class="text-[9px] uppercase tracking-wider text-madek-blue font-bold block mb-0.5">${catLabel}</span>
+                <h3 class="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">${p.name}</h3>
+            </div>
 
-                        <!-- Botón y Precio -->
-                        <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100">
-                            <span class="text-sm font-bold text-madek-blue">${formattedPrice}</span>
-                            <button onclick="quickAddToCart(${p.id}, event)" class="w-8 h-8 rounded-full bg-madek-blue hover:bg-madek-blueDark text-white flex items-center justify-center active:scale-90 transition-all shadow-sm" aria-label="Añadir a la bolsa">
-                                <i class="fa-solid fa-plus text-xs"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                grid.insertAdjacentHTML('beforeend', cardHTML);
-            });
-        }
-
+            <!-- Botón y Precio -->
+            <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100">
+                <span class="text-sm font-bold text-madek-blue">${formattedPrice}</span>
+                <button 
+                    ${isOutOfStock ? 'disabled class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center cursor-not-allowed"' 
+                                   : 'onclick="quickAddToCart('+p.id+', event)" class="w-8 h-8 rounded-full bg-madek-blue hover:bg-madek-blueDark text-white flex items-center justify-center active:scale-90 transition-all shadow-sm"'} 
+                    aria-label="Añadir a la bolsa">
+                    <i class="fa-solid ${isOutOfStock ? 'fa-ban' : 'fa-plus'} text-xs"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    grid.insertAdjacentHTML('beforeend', cardHTML);
+});
         function toggleCardImage(productId, event) {
             if (event) event.stopPropagation();
             
